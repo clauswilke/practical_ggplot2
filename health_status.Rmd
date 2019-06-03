@@ -1,0 +1,219 @@
+---
+title: "Health status by age"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(
+  fig.height = 2.7
+)
+```
+
+The dviz.supp package contains the dataset we're working with. We also need the development version of cowplot.
+```{r}
+# devtools::install_github("clauswilke/dviz.supp")
+# devtools::install_github("wilkelab/cowplot")
+```
+
+
+The basic data.
+```{r message = FALSE, warning = FALSE}
+library(tidyverse)
+library(cowplot)
+
+data_health <- select(dviz.supp::happy, age, health) %>%
+  na.omit() %>%
+  mutate(health = fct_rev(health)) # revert factor order
+
+head(data_health)
+
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  geom_density(fill = "lightblue") +
+  facet_wrap(~health, nrow = 1)
+```
+
+Add overall distribution as background.
+```{r}
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  # we add a density layer that uses the data without the column
+  # by which we are faceting; this places the full dataset into
+  # each facet
+  geom_density(
+    data = select(data_health, -health),
+    aes(fill = "all people surveyed"),
+  ) +
+  geom_density(aes(fill = "highlighted group")) +
+  facet_wrap(~health, nrow = 1)
+```
+
+Define the scales.
+```{r}
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  geom_density(
+    data = select(data_health, -health),
+    aes(fill = "all people surveyed"),
+  ) +
+  geom_density(aes(fill = "highlighted group")) +
+  scale_x_continuous(
+    name = "age (years)",
+    limits = c(15, 98),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    name = "count",
+    expand = c(0, 0)
+  ) +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  facet_wrap(~health, nrow = 1)
+```
+
+Basic theme; move legend to bottom; remove outline around densities.
+```{r}
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  geom_density(
+    data = select(data_health, -health),
+    aes(fill = "all people surveyed"),
+    color = NA
+  ) +
+  geom_density(aes(fill = "highlighted group"), color = NA) +
+  scale_x_continuous(
+    name = "age (years)",
+    limits = c(15, 98),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    name = "count",
+    expand = c(0, 0)
+  ) +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  facet_wrap(~health, nrow = 1) +
+  theme_minimal_hgrid(12) +
+  theme(
+    legend.position = "bottom",
+    legend.justification = "right"
+  )
+```
+
+Theme tweaks: Larger strip labels, move legend closer to plot, adjust horizontal legend spacing.
+
+```{r}
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  geom_density(
+    data = select(data_health, -health),
+    aes(fill = "all people surveyed"),
+    color = NA
+  ) +
+  geom_density(aes(fill = "highlighted group"), color = NA) +
+  scale_x_continuous(
+    name = "age (years)",
+    limits = c(15, 98),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    name = "count",
+    expand = c(0, 0)
+  ) +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  facet_wrap(~health, nrow = 1) +
+  theme_minimal_hgrid(12) +
+  theme(
+    strip.text = element_text(size = 12, margin = margin(0, 0, 6, 0, "pt")),
+    legend.position = "bottom",
+    legend.justification = "right",
+    legend.margin = margin(6, 0, 1.5, 0, "pt"),
+    legend.spacing.x = grid::unit(3, "pt"),
+    legend.spacing.y = grid::unit(0, "pt"),
+    legend.box.spacing = grid::unit(0, "pt")
+  )
+```
+
+Remove axis line, add spacing between legend items.
+
+```{r}
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  geom_density(
+    data = select(data_health, -health),
+    aes(fill = "all people surveyed   "),
+    color = NA
+  ) +
+  geom_density(aes(fill = "highlighted group"), color = NA) +
+  scale_x_continuous(
+    name = "age (years)",
+    limits = c(15, 98),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    name = "count",
+    expand = c(0, 0)
+  ) +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  facet_wrap(~health, nrow = 1) +
+  theme_minimal_hgrid(12) +
+  theme(
+    axis.line = element_blank(),
+    strip.text = element_text(size = 12, margin = margin(0, 0, 6, 0, "pt")),
+    legend.position = "bottom",
+    legend.justification = "right",
+    legend.margin = margin(6, 0, 1.5, 0, "pt"),
+    legend.spacing.x = grid::unit(3, "pt"),
+    legend.spacing.y = grid::unit(0, "pt"),
+    legend.box.spacing = grid::unit(0, "pt")
+  )
+```
+
+Turn off clipping.
+
+```{r}
+ggplot(data_health, aes(x = age, y = stat(count))) +
+  geom_density(
+    data = select(data_health, -health),
+    aes(fill = "all people surveyed   "),
+    color = NA
+  ) +
+  geom_density(aes(fill = "highlighted group"), color = NA) +
+  scale_x_continuous(
+    name = "age (years)",
+    limits = c(15, 98),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    name = "count",
+    expand = c(0, 0)
+  ) +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  facet_wrap(~health, nrow = 1) +
+  coord_cartesian(clip = "off") +
+  theme_minimal_hgrid(12) +
+  theme(
+    axis.line = element_blank(),
+    strip.text = element_text(size = 12, margin = margin(0, 0, 6, 0, "pt")),
+    legend.position = "bottom",
+    legend.justification = "right",
+    legend.margin = margin(6, 0, 1.5, 0, "pt"),
+    legend.spacing.x = grid::unit(3, "pt"),
+    legend.spacing.y = grid::unit(0, "pt"),
+    legend.box.spacing = grid::unit(0, "pt")
+  )
+```
