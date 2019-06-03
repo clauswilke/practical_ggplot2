@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The dviz.supp package contains the dataset we're working with. We also need the development version of cowplot.
+The dviz.supp package contains the dataset we are working with. The themes are provided by the cowplot package, of which we need a version >= 0.9.99. As of this writing, this is not yet available on CRAN.
 ```{r}
 # devtools::install_github("clauswilke/dviz.supp")
 # devtools::install_github("wilkelab/cowplot")
@@ -147,6 +147,9 @@ Remove axis line, add spacing between legend items.
 ggplot(data_health, aes(x = age, y = stat(count))) +
   geom_density(
     data = select(data_health, -health),
+    # a simple workaround to a limitation in ggplot2:
+    # add a few spaces at the end of the legend text
+    # to space out the legend items
     aes(fill = "all people surveyed   "),
     color = NA
   ) +

@@ -5,7 +5,7 @@ output:
     df_print: paged
 ---
 
-The dviz.supp package contains the dataset we're working with. We also need the development version of cowplot.
+The dviz.supp package contains the dataset we are working with. The themes are provided by the cowplot package, of which we need a version >= 0.9.99. As of this writing, this is not yet available on CRAN.
 ```{r}
 # devtools::install_github("clauswilke/dviz.supp")
 # devtools::install_github("wilkelab/cowplot")
@@ -26,7 +26,7 @@ ggplot(corrupt, aes(cpi, hdi, color = region)) +
   geom_point()
 ```
 
-Basic styling: point colors and theme
+Basic styling: point colors and theme.
 ```{r message = FALSE, warning = FALSE}
 library(cowplot) # for theme_minimal_hgrid()
 library(colorspace) # for darken()
@@ -171,7 +171,7 @@ ggplot(corrupt, aes(cpi, hdi)) +
   )
 ```
 
-Reformat legend into single row.
+Reformat legend into a single row.
 
 ```{r}
 corrupt <- corrupt %>%
