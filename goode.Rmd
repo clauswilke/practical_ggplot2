@@ -18,7 +18,7 @@ The theme we are using is provided by the cowplot package. However, we need a ve
 
 The interrupted Goode homolosine projection is available via `coord_sf()`.
 
-```{r message = FALSE, warning = FALSE}
+```{r message = FALSE}
 library(tidyverse)
 library(rworldmap) # for getMap()
 library(sf)

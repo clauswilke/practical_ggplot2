@@ -8,6 +8,7 @@ The examples shown are based on the book ["Fundamentals of Data Visualization."]
 
 List of examples provided:
 
+- [Bundestag pie chart](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/bundestag_pie.html)
 - [Corruption and human development](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/corruption_human_development.html)
 - [Health status by age](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/health_status.html)
 - [Interrupted Goode homolosine](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/goode.html)

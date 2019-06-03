@@ -18,8 +18,8 @@ The dviz.supp package contains the dataset we are working with. The theme we are
 ```
 
 
-The basic data.
-```{r message = FALSE, warning = FALSE}
+The data, shown in table form and as basic density plots.
+```{r message = FALSE}
 library(tidyverse)
 library(cowplot)
 
