@@ -1,0 +1,194 @@
+---
+title: "Median Texas income by county"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.width = 6, fig.height = .75*6
+)
+```
+
+The dviz.supp package contains the dataset we are working with. The theme we are using is provided by the cowplot package. However, we need a version >= 0.9.99 of this package. As of this writing, this is not yet available on CRAN.
+```{r}
+# devtools::install_github("clauswilke/dviz.supp")
+# devtools::install_github("wilkelab/cowplot")
+```
+
+The data, in table form and simple longitude--latitude plot.
+
+```{r message = FALSE}
+library(tidyverse)
+library(sf)
+
+# load data
+data(texas_income, package = "dviz.supp")
+
+texas_income
+
+ggplot(texas_income, aes(fill = estimate)) + 
+  geom_sf()
+```
+
+
+Transform to more appropriate coordinate system, [EPSG:3083,](https://epsg.io/3083) a Texas-centric Albers equal area projection.
+
+```{r}
+# EPSG:3083 Texas-centric Albers equal area
+# https://epsg.io/3083
+texas_crs <- "+proj=aea +lat_1=27.5 +lat_2=35 +lat_0=18 +lon_0=-100 +x_0=1500000 +y_0=6000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+
+texas_transf <- st_transform(texas_income, crs = texas_crs) 
+
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf()
+```
+
+Use different color scale.
+
+```{r}
+library(colorspace) # for scale_fill_continuous_sequential
+
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf(color = "white") +
+  scale_fill_continuous_sequential(
+    palette = "Blues", rev = TRUE,
+    na.value = "grey60"
+  )
+```
+
+We want the legend to be oriented horizontally and placed to the lower left of Texas. Therefore, we need to change the plot limits to create space for the legend. We choose limits of -110, -93.5 degrees longitude at 30 degrees latitude, transformed to X, Y with EPSG:3083. We could do the transformation with `st_transform()`, as above, or we can do it manually at https://epsg.io/transform.
+
+```{r}
+# https://epsg.io/transform#s_srs=4326&t_srs=3083&x=-110.0000000&y=30.0000000
+# https://epsg.io/transform#s_srs=4326&t_srs=3083&x=-93.5000000&y=30.0000000
+# (-110, 30) is (538250.08, 7363459.44)
+# (-93.5, 30) is (2125629.02, 7338358.43)
+
+texas_xlim <- c(538250, 2125629)
+
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf(color = "white") +
+  coord_sf(xlim = texas_xlim) +
+  scale_fill_continuous_sequential(
+    palette = "Blues", rev = TRUE,
+    na.value = "grey60"
+  )
+```
+
+Now we can move the legend into place.
+
+```{r}
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf(color = "white") +
+  coord_sf(xlim = texas_xlim) +
+  scale_fill_continuous_sequential(
+    palette = "Blues", rev = TRUE,
+    na.value = "grey60",
+    guide = guide_colorbar(
+      direction = "horizontal",
+      label.position = "bottom",
+      title.position = "top",
+      barwidth = grid::unit(3.0, "in"),
+      barheight = grid::unit(0.2, "in")
+    )
+  ) +
+  theme(
+    legend.title.align = 0.5,
+    legend.text.align = 0.5,
+    legend.justification = c(0, 0),
+    legend.position = c(0.02, 0.1)
+  )
+```
+
+Fine-tune legend title and breaks.
+
+```{r}
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf(color = "white") +
+  coord_sf(xlim = texas_xlim) +
+  scale_fill_continuous_sequential(
+    palette = "Blues", rev = TRUE,
+    na.value = "grey60",
+    name = "annual median income (USD)",
+    limits = c(18000, 90000),
+    breaks = 20000*c(1:4),
+    labels = c("$20,000", "$40,000", "$60,000", "$80,000"),
+    guide = guide_colorbar(
+      direction = "horizontal",
+      label.position = "bottom",
+      title.position = "top",
+      barwidth = grid::unit(3.0, "in"),
+      barheight = grid::unit(0.2, "in")
+    )
+  ) +
+  theme(
+    legend.title.align = 0.5,
+    legend.text.align = 0.5,
+    legend.justification = c(0, 0),
+    legend.position = c(0.02, 0.1)
+  )
+```
+
+Switch the theme to a simple, mostly empty theme suitable for a map.
+
+```{r message = FALSE}
+library(cowplot) # for theme_map()
+
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf(color = "white") +
+  coord_sf(xlim = texas_xlim) +
+  scale_fill_continuous_sequential(
+    palette = "Blues", rev = TRUE,
+    na.value = "grey60",
+    name = "annual median income (USD)",
+    limits = c(18000, 90000),
+    breaks = 20000*c(1:4),
+    labels = c("$20,000", "$40,000", "$60,000", "$80,000"),
+    guide = guide_colorbar(
+      direction = "horizontal",
+      label.position = "bottom",
+      title.position = "top",
+      barwidth = grid::unit(3.0, "in"),
+      barheight = grid::unit(0.2, "in")
+    )
+  ) +
+  theme_map(12) +
+  theme(
+    legend.title.align = 0.5,
+    legend.text.align = 0.5,
+    legend.justification = c(0, 0),
+    legend.position = c(0.02, 0.1)
+  )
+```
+
+Remove the graticule by setting `datum = NA` in `coord_sf()`.
+```{r}
+ggplot(texas_transf, aes(fill = estimate)) + 
+  geom_sf(color = "white") +
+  coord_sf(xlim = texas_xlim, datum = NA) +
+  scale_fill_continuous_sequential(
+    palette = "Blues", rev = TRUE,
+    na.value = "grey60",
+    name = "annual median income (USD)",
+    limits = c(18000, 90000),
+    breaks = 20000*c(1:4),
+    labels = c("$20,000", "$40,000", "$60,000", "$80,000"),
+    guide = guide_colorbar(
+      direction = "horizontal",
+      label.position = "bottom",
+      title.position = "top",
+      barwidth = grid::unit(3.0, "in"),
+      barheight = grid::unit(0.2, "in")
+    )
+  ) +
+  theme_map(12) +
+  theme(
+    legend.title.align = 0.5,
+    legend.text.align = 0.5,
+    legend.justification = c(0, 0),
+    legend.position = c(0.02, 0.1)
+  )
+```

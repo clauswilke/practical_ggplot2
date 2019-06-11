@@ -12,3 +12,4 @@ List of examples provided:
 - [Corruption and human development](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/corruption_human_development.html)
 - [Health status by age](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/health_status.html)
 - [Interrupted Goode homolosine](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/goode.html)
+- [Median Texas income by county](https://htmlpreview.github.io/?https://github.com/clauswilke/practical_ggplot2/blob/master/Texas_income.html)
