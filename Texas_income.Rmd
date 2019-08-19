@@ -11,10 +11,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-The dviz.supp package contains the dataset we are working with. The theme we are using is provided by the cowplot package. However, we need a version >= 0.9.99 of this package. As of this writing, this is not yet available on CRAN.
+The dviz.supp package contains the dataset we are working with.
 ```{r}
 # devtools::install_github("clauswilke/dviz.supp")
-# devtools::install_github("wilkelab/cowplot")
 ```
 
 The data, in table form and simple longitude--latitude plot.

@@ -11,11 +11,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-The theme we are using is provided by the cowplot package. However, we need a version >= 0.9.99 of this package. As of this writing, this is not yet available on CRAN.
-```{r}
-# devtools::install_github("wilkelab/cowplot")
-```
-
 The interrupted Goode homolosine projection is available via `coord_sf()`.
 
 ```{r message = FALSE}
